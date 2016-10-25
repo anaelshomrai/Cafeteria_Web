@@ -78,7 +78,6 @@ function initIcons() {
     itemsOptions.append('<option value=icon class="glyphicon glyphicon-remove"></option>');
 
     itemsOptions.bootstrapDualListbox('refresh', true);
-
 }
 
 function addItem(title, price) {
