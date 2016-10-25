@@ -1,0 +1,9 @@
+h1{
+    color:rebeccapurple;
+    text-align: center;
+}
+
+#categoryDetailsForm {
+  width: 60%;
+  margin: auto;
+}
