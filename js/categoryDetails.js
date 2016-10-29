@@ -72,7 +72,7 @@ $(document).ready(function () {
 
 function initIcons() {
     var itemsOptions = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox();
-    itemsOptions.append('<option value=icon class="glyphicon glyphicon-remove"></option>');
+    itemsOptions.append('<option value=icon class="glyphicon glyphicon-edit"></option>');
     itemsOptions.append('<option value=icon class="glyphicon glyphicon-edit"></option>');
     itemsOptions.append('<option value=icon class="glyphicon glyphicon-remove"></option>');
     itemsOptions.append('<option value=icon class="glyphicon glyphicon-remove"></option>');

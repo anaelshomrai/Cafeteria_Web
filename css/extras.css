@@ -22,3 +22,13 @@
     width:60%;
     margin: 0 auto;
 }
+
+#addExtraDiv {
+    width:70%;
+    padding: 10px;
+    margin: 0 auto;
+}
+.singleInput{
+    padding: 2px;
+}
+

@@ -5,16 +5,6 @@ $(document).ready(function () {
     $("#addCategory").click(function () {
         window.location.replace("/categoryDetails.html");
     });
-
-    $("#backToCategories").click(function () {
-        window.location.replace("/home.html");
-    });
-
-    $('#signOut').click(function () {
-        localStorage.removeItem('customer');
-        window.location.replace("/index.html");
-    });
-
 });
 
 
@@ -27,7 +17,7 @@ function initTable(data) {
         url: theUrl,
         timeout: 5000,
         success: function (data, textStatus) {
-            alert('request successful');
+//            alert('request successful');
             $.each(data, function (index, element) {
                 $('#categoriesTable').append($('<tr><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" (click)="onEdit(category)">Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" ' + '(click)="onDelete(category)">Delete    <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
 

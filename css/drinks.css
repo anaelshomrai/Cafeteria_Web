@@ -18,6 +18,15 @@
    text-align: center;
 }
 
+#addDrinkDiv {
+    width:70%;
+    padding: 10px;
+    margin: 0 auto;
+}
+.singleInput{
+    padding: 2px;
+}
+
 .table-center{
     width:60%;
     margin: 0 auto;

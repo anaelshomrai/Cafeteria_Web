@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Cafeteria</title>
+    <base href="/">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="css/navbar.css" rel="stylesheet">
+    <link href="css/drinks.css" rel="stylesheet">
+</head>
+
+<body onload="initTable();">
+
+
+
+    <div id="navbar"> </div>
+
+    <h1 class="text-center my-headline">Drinks Table</h1>
+
+    <div id="addDrinkDiv">
+        <div class="row">
+            <div class="col-md-5 col-sm-5 col-xs-12 singleInput">
+                <input id="title" type="text" class="form-control" placeholder="Title" aria-describedby="basic-addon1">
+            </div>
+            <div class="col-md-5 col-sm-5 col-xs-12 singleInput">
+                <input id="price" type="text" class="form-control" placeholder="Price" aria-describedby="basic-addon1">
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-12 singleInput">
+                <button id="addDrink" type="button" class="btn btn-success">Add
+      <span class="glyphicon glyphicon-ok"></span>
+    </button>
+                <button id="updateDrink" type="button" class="btn btn-success">Update
+      <span class="glyphicon glyphicon-ok"></span>
+    </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+<div class="table-center">
+        <table class="table table-hover" id="drinksTable">
+            <thead>
+                <tr>
+                    <th>Drink</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script language="JavaScript" type="text/javascript" src="js/js.js"></script>
+    <script language="JavaScript" type="text/javascript" src="js/drinks.js"></script>
+</body>
+
+</html>
