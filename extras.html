@@ -8,6 +8,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="css/style.css" rel="stylesheet">
     <link href="css/navbar.css" rel="stylesheet">
     <link href="css/extras.css" rel="stylesheet">
 </head>
@@ -18,13 +19,13 @@
 
     <h1 class="text-center my-headline">Extras Table</h1>
 
-    <div id="addExtraDiv">
+    <div id="addExtraDiv" class="custom-div">
         <div class="row">
             <div class="col-md-5 col-sm-5 col-xs-12 singleInput">
                 <input id="title" type="text" class="form-control" placeholder="Title" aria-describedby="basic-addon1">
             </div>
             <div class="col-md-5 col-sm-5 col-xs-12 singleInput">
-                <input id="price" type="text" class="form-control" placeholder="Price" aria-describedby="basic-addon1">
+                <input id="price" type="number" min="0" class="form-control" placeholder="Price" aria-describedby="basic-addon1">
             </div>
             <div class="col-md-2 col-sm-2 col-xs-12 singleInput">
                 <button id="addExtra" type="button" class="btn btn-success">Add

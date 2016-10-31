@@ -3,7 +3,7 @@ window.customer = JSON.parse(localStorage.customer);
 $(document).ready(function () {
 
     $("#addCategory").click(function () {
-        window.location.replace("/categoryDetails.html");
+        window.location.replace("category-details.html");
     });
 });
 

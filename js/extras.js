@@ -69,7 +69,7 @@ function initTable(data) {
 
 }
 
-function addDrink(title, price) {
+function addExtra(title, price) {
     var urlAddress = "http://localhost:8080/CafeteriaServer/rest/web/addExtra";
     var extra = {
         id: 0,
@@ -84,8 +84,7 @@ function addDrink(title, price) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            $("#drinksTable tr").remove();
-            initTable();
+            location.reload();
 
         },
         failure: function (errMsg) {
