@@ -4,6 +4,8 @@ var mains = [];
 var extras = [];
 var selectedIndex;
 var newMain = true;
+var inEdit = false;
+var editMeal;
 $(document).ready(function () {
     $("#existing-main").hide();
     $("#new-main").hide();
@@ -81,6 +83,19 @@ $(document).ready(function () {
             price: mealPrice
         };
 
+        if ($("#saveMeal").text() == "Update") {
+            var meals = JSON.parse(sessionStorage.getItem("meals"));
+            var index = sessionStorage.getItem("editMealIndex");
+            meals[index] = meal;
+            sessionStorage.setItem("meals", JSON.stringify(meals));
+            sessionStorage.removeItem("editMeal");
+            sessionStorage.removeItem("editMealIndex");
+            alert("meals saved after update");
+
+        } else {
+            sessionStorage.setItem("meal", JSON.stringify(meal));
+            alert("meal saved after create");
+        }
 
         //        alert("meal title: " + meal.title + "\n" +
         //            "meal price: " + meal.price + "\n" +
@@ -89,7 +104,6 @@ $(document).ready(function () {
         //            "selected extra: " + meal.extras.length
         //        );
 
-        sessionStorage.setItem("meal",JSON.stringify(meal));
         window.location.replace("category-details.html");
 
     });
@@ -98,10 +112,35 @@ $(document).ready(function () {
         selectedIndex = clickedIndex;
     });
 
+    if (sessionStorage.getItem("editMeal") !== null) {
+        inEdit = true;
+        editMeal = JSON.parse(sessionStorage.getItem("editMeal"));
+        alert("at update found edit meal");
+
+        $('#mealTitle').val(editMeal.title);
+        $('#mealPrice').val(editMeal.price);
+        var main = editMeal.main;
+        if (main.id === -1) {
+            $('#mainTitle').val(main.title);
+            $("#new-main").show();
+        } else {
+            $("#existing-main").show();
+
+        }
+        $('#extraAmount').val(editMeal.extraAmount);
+        $('#saveMeal').text("Update");
+
+    }
+
 });
 
 function initExtras() {
     extras = [];
+    var editExtras;
+    if (inEdit === true) {
+        editMeal = JSON.parse(sessionStorage.getItem("editMeal"));
+        editExtras = editMeal.extras;
+    }
     var theUrl = "http://localhost:8080/CafeteriaServer/rest/web/getExtras";
     $.ajax({
         type: 'GET',
@@ -111,14 +150,29 @@ function initExtras() {
         success: function (data, textStatus) {
             //            alert('request successful');
             $.each(data, function (index, element) {
-                dualllistbox.append('<option value="' + element.id + '">' + element.title + '</option>');
-                dualllistbox.bootstrapDualListbox('refresh', true);
-
+                var found = false;
                 extras.push({
                     id: element.id,
                     title: element.title,
                     price: element.price
                 });
+                if (inEdit === false) {
+                    dualllistbox.append('<option value="' + element.id + '">' + element.title + '</option>');
+                    dualllistbox.bootstrapDualListbox('refresh', true);
+                } else {
+                    $.each(editExtras, function (index, extra) {
+                        if (element.id === extra.id) {
+                            dualllistbox.append('<option value="' + element.id + '" selected="selected">' + element.title + '</option>');
+                            dualllistbox.bootstrapDualListbox('refresh', true);
+                            found = true;
+                        }
+                    })
+                    if (found === false) {
+                        dualllistbox.append('<option value="' + element.id + '">' + element.title + '</option>');
+                        dualllistbox.bootstrapDualListbox('refresh', true);
+                    }
+                }
+
             })
             $('.selectpicker').selectpicker('refresh');
 
@@ -146,6 +200,9 @@ function initMains() {
                     title: element.title
                 });
             })
+
+            $('.selectpicker').selectpicker('val', editMeal.main.title);
+
 
         },
         error: function (xhr, textStatus, errorThrown) {

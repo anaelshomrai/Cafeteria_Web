@@ -1,6 +1,15 @@
 #addItemDiv {
     padding: 10px;
 }
-.thumbnail a>img, .thumbnail>img{
+
+.thumbnail a>img,
+.thumbnail>img {
     width: 50px;
+}
+
+.selected-icon {
+    width: 50px;
+    overflow: auto;
+    padding: 0px;
+    margin: 0 auto;
 }
