@@ -1,3 +1,6 @@
 #addItemDiv {
     padding: 10px;
 }
+.thumbnail a>img, .thumbnail>img{
+    width: 50px;
+}
