@@ -48,6 +48,7 @@
         $("#backToCategories").click(function () {
             sessionStorage.removeItem("meal");
             sessionStorage.removeItem("meals");
+            sessionStorage.removeItem("inEdit")
             window.location.replace("/index.html");
         });
 
