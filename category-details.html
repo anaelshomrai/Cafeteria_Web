@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-duallistbox.css">
-    <script src="https://use.fontawesome.com/8265b4ceb7.js"></script>
     <link href="css/style.css" rel="stylesheet">
     <link href="css/image-picker.css" rel="stylesheet">
     <link href="css/category-details.css" rel="stylesheet">
@@ -25,12 +24,12 @@
         <h1 class="my-headline text-center">Add Category</h1>
         <form id="categoryDetailsForm" class="my-form">
             <div class="form-group">
-                <label for="title">Title</label>
+                <label for="categoryTitle">Title</label>
                 <input type="text" class="form-control" id="categoryTitle" required>
             </div>
             <div class="form-group">
-                <label for="description">Description</label>
-                <input type="text" class="form-control" id="categoryDescription">
+                <label for="categoryDescription">Description</label>
+                <input type="text" class="form-control" id="categoryDescription" required>
             </div>
 
             <div class="form-group">
@@ -104,7 +103,7 @@
             </div>
 
             <div class="form-group text-center">
-                <button id="saveCategory" type="button" class="btn btn-primary">Submit</button>
+                <button id="saveCategory" type="submit" class="btn btn-primary">Submit</button>
             </div>
 
         </form>

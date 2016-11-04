@@ -5,9 +5,16 @@
     var icon_index = 0;
     var firstMeal = true;
     var categoryEdit;
-//    var localIcons = [
-//            "icons/cafe_black.png"
-//];
+    var localIcons = [
+"https://s16.postimg.org/urynzolp1/hot_Drink.png",
+"https://s12.postimg.org/a8gpmsa3x/cold_Drink.png",
+"https://s17.postimg.org/o2sbc63db/meat.png",
+"https://s12.postimg.org/hm4bghu2l/salad.png",
+"https://s15.postimg.org/qwzer7nqz/snacks.png",
+"https://s15.postimg.org/rqd5vzuwb/cafe_black.png",
+"https://s13.postimg.org/ob8agi99z/cafe_white.png",
+"https://s18.postimg.org/xjimiz9ix/pizza_black.png"
+];
     $(document).ready(function () {
         meals = [];
         if (sessionStorage.getItem("meal") !== null) {
@@ -27,6 +34,9 @@
 
         if (sessionStorage.getItem("meals") !== null) {
             meals = JSON.parse(sessionStorage.getItem("meals"));
+            $("#categoryDescription").val(sessionStorage.getItem("categoryDescription"));
+            $("#categoryTitle").val(sessionStorage.getItem("categoryTitle"));
+
         }
         if (meals.length > 0) {
             initMealsTable();
@@ -42,6 +52,10 @@
         });
 
         $("#addMealBtn").click(function () {
+            var title = $("#categoryTitle").val();
+            sessionStorage.setItem("categoryTitle", title);
+            var desc = $("#categoryDescription").val();
+            sessionStorage.setItem("categoryDescription", desc);
             window.location.replace("/meal-details.html");
         });
 
@@ -57,22 +71,29 @@
             }
         });
 
-        $("#saveCategory").click(function () {
-            saveCategoryinDB();
+        $("#categoryDetailsForm").submit(function () {
+            $("#saveCategory").attr("disabled", true);
+            if ($("#saveCategory").text() === "Update") {
+                updateCategoryinDB();
+            } else {
+                saveCategoryinDB();
+            }
             sessionStorage.removeItem("meals");
+             return false;
         });
+
 
         if (sessionStorage.getItem("categoryEdit") !== null) {
             categoryEdit = JSON.parse(sessionStorage.getItem("categoryEdit"));
             sessionStorage.removeItem("categoryEdit");
-            //            alert(categoryEdit.title + " " + categoryEdit.icon);
+            sessionStorage.setItem("inEdit", true);
+
 
             $("#categoryTitle").val(categoryEdit.title);
             $("#categoryDescription").val(categoryEdit.description);
-            //            icon
-            var itemsEdit = categoryEdit.items;
-            if (itemsEdit.length > 0) {
-                $.each(itemsEdit, function (index, element) {
+            items = categoryEdit.items;
+            if (items.length > 0) {
+                $.each(items, function (index, element) {
                     $('#itemsTable').append($('<tr id="' + element.title + '"><td>' + element.title + '</td>' +
                         '<td>' + element.price + '</td>' +
                         '<td> <button type="button" class="btn btn-primary" id="editItem"> <span id="editText">Edit </span> <span' +
@@ -84,10 +105,11 @@
                     firstItem = false;
                 }
             }
-            var mealsEdit = categoryEdit.meals;
+            meals = categoryEdit.meals;
+            sessionStorage.setItem("meals", JSON.stringify(meals));
 
-            if (mealsEdit.length > 0) {
-                $.each(mealsEdit, function (index, element) {
+            if (meals.length > 0) {
+                $.each(meals, function (index, element) {
                     $('#mealsTable').append($('<tr id="' + element.title + '"><td>' + element.title + '</td>' +
                         '<td> <button type="button" class="btn btn-primary" id="editMeal">Edit <span' +
                         ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" ' +
@@ -105,7 +127,16 @@
                 arrayBufferToBase64(categoryEdit.icon);
             var imgSrc = "data:image/png;base64," + temp;
             $('#theIcon').attr("src", imgSrc);
+            sessionStorage.setItem("categoryIcon", temp);
+            sessionStorage.setItem("categoryId", categoryEdit.id);
 
+        }
+
+        if (sessionStorage.getItem("inEdit") !== null) {
+            $("#saveCategory").text("Update");
+            var icon = sessionStorage.getItem("categoryIcon");
+            var imgSrc = "data:image/png;base64," + icon;
+            $('#theIcon').attr("src", imgSrc);
         }
 
 
@@ -115,72 +146,47 @@
     function initIcons() {
         var editIndex;
         icons = [];
-        var theUrl = "http://localhost:8080/CafeteriaServer/rest/web/getIcons";
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            url: theUrl,
-            timeout: 5000,
-            success: function (data, textStatus) {
+        $.each(localIcons, function (index, element) {
 
-                $.each(data, function (index, element) {
+            icons.push({
+                id: element.id,
+                icon: element.icon
+            });
+            $('.image-picker').append("<option data-img-src= " + element + " value=" + index + "> </option>");
 
-                    icons.push({
-                        id: element.id,
-                        icon: element.icon
-                    });
-                    var decoded = arrayBufferToBase64(element.icon);
-                    $('.image-picker').append("<option data-img-src= data:image/png;base64," + decoded + " value=" + index + "> </option>");
+            if (categoryEdit === undefined) {
 
-                    if (categoryEdit === undefined) {
-
-                    } else {
-                        if (element.icon === categoryEdit.icon) {
-                            editIndex = index;
-                        }
-                    }
-
-                })
-                $("select").imagepicker({
-                    show_label: false,
-                    selected: function () {
-                        icon_index = this.val();
-                        var temp = arrayBufferToBase64(icons[icon_index].icon);
-                        var imgSrc = "data:image/png;base64," + temp;
-                        $('#theIcon').attr("src", imgSrc);
-                    }
-                });
-
-                if (categoryEdit === undefined) {
-                    var temp =
-                        arrayBufferToBase64(icons[0].icon);
-                    var imgSrc = "data:image/png;base64," + temp;
-//                    var test = localIcons[0];
-                    $('#theIcon').attr("src", imgSrc);
-//                    $('#theIcon').attr("src", test);
-//                    var canvas = document.createElement("canvas");
-//                    var imageElement = document.createElement("img");
-//
-//                    imageElement.setAttribute('src', test);
-//
-//                    canvas.width = imageElement.width;
-//                    canvas.height = imageElement.height;
-//                    var context = canvas.getContext("2d");
-//                    context.drawImage(imageElement, 0, 0);
-//                    var base64Image = canvas.toDataURL("image/png");
-
-                } else {
-                    $("select").val(-1);
-                    $("select").data('picker').sync_picker_with_select();
+            } else {
+                if (element.icon === categoryEdit.icon) {
+                    editIndex = index;
                 }
+            }
 
+        })
 
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                alert('request failed');
+        $("select").imagepicker({
+            show_label: false,
+            selected: function () {
+                icon_index = this.val();
+                $('#theIcon').attr("src", localIcons[icon_index]);
             }
         });
+
+        if (categoryEdit === undefined) {
+            var firstIcon = localIcons[0];
+            $('#theIcon').attr("src", firstIcon);
+            var canvas = document.createElement("canvas");
+            var imageElement = document.createElement("img");
+
+            imageElement.setAttribute('src', firstIcon);
+
+        } else {
+            $("select").val(-1);
+            $("select").data('picker').sync_picker_with_select();
+        }
+
     }
+
 
     function addItem(title, price) {
         items.push({
@@ -246,15 +252,7 @@
     }
 
 
-    function arrayBufferToBase64(buffer) {
-        var binary = '';
-        var bytes = new Uint8Array(buffer);
-        var len = bytes.byteLength;
-        for (var i = 0; i < len; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return window.btoa(binary);
-    }
+
 
     function initMealsTable() {
 
@@ -286,13 +284,36 @@
             var row = $(this).closest('tr');
             var index = row.index();
             var mealEdit = meals[index];
+            alert("meals[" + index + "]" + ": " + meals[index]);
             sessionStorage.setItem("editMealIndex", index);
             sessionStorage.setItem("editMeal", JSON.stringify(mealEdit));
-            alert("index and edit meal saved");
-            alert(JSON.stringify(mealEdit));
+            var title = $("#categoryTitle").val();
+            sessionStorage.setItem("categoryTitle", title);
+            var desc = $("#categoryDescription").val();
+            sessionStorage.setItem("categoryDescription", desc);
             window.location.replace("/meal-details.html");
-
         });
+    }
+
+    function arrayBufferToBase64(buffer) {
+        var binary = '';
+        var bytes = new Uint8Array(buffer);
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
+
+
+    function base64ToArrayBuffer(base64) {
+        var binary_string = window.atob(base64);
+        var len = binary_string.length;
+        var bytes = new Uint8Array(len);
+        for (var i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
     }
 
     function saveCategoryinDB() {
@@ -300,62 +321,72 @@
 
         var categoryTitle = $("#categoryTitle").val();
         var categoryDesc = $("#categoryDescription").val();
-        var icon = icons[icon_index];
-        var items = [];
-        var item = {
-            id: 0,
-            title: "test",
-            price: "5.5"
-        };
-        items.push(item);
-        var decoded = arrayBufferToBase64(icon.icon);
+        var icon = localIcons[icon_index];
 
-        var category = {
+        $.post(urlAddress, {
             id: 0,
             title: categoryTitle,
             description: categoryDesc,
-            items: items,
-            meals: meals,
-            icon: decoded
+            items: JSON.stringify(items),
+            meals: JSON.stringify(meals),
+            icon: icon
+        }, function (data, status) {
+            alert("Data: " + data + "\nStatus: " + status);
+            window.location.replace("/home.html");
+
+            if (data === null) {
+                alert("null");
+            } else {
+
+
+            }
+        });
+
+    }
+
+    function updateCategoryinDB() {
+        var urlAddress = "http://localhost:8080/CafeteriaServer/rest/web/updateCategory";
+
+        var categoryTitle = $("#categoryTitle").val();
+        var categoryDesc = $("#categoryDescription").val();
+        var icon = localIcons[icon_index];
+        var id = sessionStorage.getItem("categoryId");
+
+        var category = {
+            id: id,
+            title: categoryTitle,
+            description: categoryDesc,
+            items: JSON.stringify(items),
+            meals: JSON.stringify(meals),
+            icon: icon
         };
 
         alert("category id: " + category.id + "\n" +
             "category title: " + category.title + "\n" +
             "category description: " + category.description + "\n" +
             "category items: " + items + "\n" +
-            "cateory meals: " + category.meals + "\n"
+            "cateory meals: " + category.meals + "\n" +
+            "cateory icon: " + icon + "\n"
+
         );
 
-        $.ajax({
-            type: "POST",
-            url: urlAddress,
-            data: JSON.stringify(category),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (data) {
-                alert(data);
+        $.post(urlAddress, {
+            id: id,
+            title: categoryTitle,
+            description: categoryDesc,
+            items: JSON.stringify(items),
+            meals: JSON.stringify(meals),
+            icon: icon
+        }, function (data, status) {
+            alert("Data: " + data + "\nStatus: " + status);
+            window.location.replace("/home.html");
 
-            },
-            failure: function (errMsg) {
-                alert(errMsg);
+            if (data === null) {
+                alert("null");
+            } else {
+
+
             }
         });
 
-
-        //                $.post(urlAddress, {
-        //                    id: 0,
-        //                    title: categoryTitle,
-        //                    description: categoryDesc,
-        //                    items: "df",
-        //                    meals: JSON.stringify(meals),
-        //                    icon : JSON.stringify(icon)
-        //                }, function (data, status) {
-        //                    alert("Data: " + data + "\nStatus: " + status);
-        //                    if (data === null) {
-        //                        alert("null");
-        //                    } else {
-        //
-        //
-        //                    }
-        //                });
     }

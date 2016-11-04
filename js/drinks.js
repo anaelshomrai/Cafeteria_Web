@@ -1,6 +1,7 @@
 var drinks = [];
 var index;
 var drink;
+var row;
 $(document).ready(function () {
 
     $("#updateDrink").click(function () {
@@ -35,7 +36,7 @@ function initTable(data) {
         success: function (data, textStatus) {
             //            alert('request successful');
             $.each(data, function (index, element) {
-                $('#drinksTable').append($('<tr><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editDrink" >Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteDrink"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
+                $('#drinksTable').append($('<tr id="' + element.id + '"><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editDrink" >Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteDrink"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
 
 
                 drinks.push({
@@ -50,12 +51,14 @@ function initTable(data) {
             $(document).on("click", "#drinksTable #deleteDrink", function (e) {
                 index = $(this).closest('tr').index();
                 drink = drinks[index];
-                deleteDrink(drink);
+                confirmDelete(drink);
+
             });
 
             $(document).on("click", "#drinksTable #editDrink", function (e) {
                 index = $(this).closest('tr').index();
                 drink = drinks[index];
+                row = $(this).closest('tr');
                 $("#addDrink").hide();
                 $("#updateDrink").show();
                 $('#price').val("" + drink.price);
@@ -86,8 +89,16 @@ function addDrink(title, price) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            $("#drinksTable tr").remove();
-            initTable();
+            var drink = {
+                id: data.id,
+                title: data.title,
+                price: data.price
+            };
+
+            $('#drinksTable').append($('<tr id="' + data.id + '"><td>' + data.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editDrink" >Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteDrink"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
+
+
+            drinks.push(drink);
 
         },
         failure: function (errMsg) {
@@ -113,14 +124,32 @@ function deleteDrink(drink) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            //            $("#drinksTable tr").remove();
-            //            initTable();
-            //            $("#deleteDrink").removeAttr("disabled");
-            location.reload();
+            var tableRowId = "#" + drinks[index].id;
+            $(tableRowId).remove();
+            drinks.splice(index, 1);
 
         },
         failure: function (errMsg) {
             alert(errMsg);
+        }
+    });
+}
+
+function confirmDelete(drink) {
+    BootstrapDialog.confirm({
+        title: 'Pay Attention!',
+        message: 'Are you sure you want to delete this item ?',
+        type: BootstrapDialog.TYPE_WARNING, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+        closable: true, // <-- Default value is false
+        draggable: true, // <-- Default value is false
+        btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+        btnOKLabel: 'Yes', // <-- Default value is 'OK',
+        btnOKClass: 'btn-warning', // <-- If you didn't specify it, dialog type will be used,
+        callback: function (result) {
+            // result will be true if button was click, while it will be false if users close the dialog directly.
+            if (result) { //no clicked
+                deleteDrink(drink);
+            }
         }
     });
 }
@@ -140,7 +169,11 @@ function updateDrink(id, title, price) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            location.reload();
+            row.find('td:eq(0)').html(title);
+            drinks[index] = drink;
+            $("#addDrink").show();
+            $('#title').val("");
+            $('#price').val("");
         },
         failure: function (errMsg) {
             alert(errMsg);

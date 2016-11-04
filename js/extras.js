@@ -1,6 +1,7 @@
 var extras = [];
 var index;
 var extra;
+var row;
 $(document).ready(function () {
 
     $("#updateExtra").click(function () {
@@ -35,7 +36,7 @@ function initTable(data) {
         success: function (data, textStatus) {
             //            alert('request successful');
             $.each(data, function (index, element) {
-                $('#extrasTable').append($('<tr><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editExtra">Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteExtra"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
+                $('#extrasTable').append($('<tr id="' + element.id + '"><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editExtra">Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteExtra"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
 
 
                 extras.push({
@@ -49,10 +50,11 @@ function initTable(data) {
             $(document).on("click", "#extrasTable #deleteExtra", function (e) {
                 index = $(this).closest('tr').index();
                 extra = extras[index];
-                deleteExtra(extra);
+                confirmDelete(extra);
             });
 
             $(document).on("click", "#extrasTable #editExtra", function (e) {
+                row = $(this).closest('tr');
                 index = $(this).closest('tr').index();
                 extra = extras[index];
                 $("#addExtra").hide();
@@ -84,7 +86,15 @@ function addExtra(title, price) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            location.reload();
+            var extra = {
+                id: data.id,
+                title: data.title,
+                price: data.price
+            };
+
+            $('#extrasTable').append($('<tr id="' + data.id + '"><td>' + data.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editExtra">Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteExtra"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
+
+            extras.push(extra);
 
         },
         failure: function (errMsg) {
@@ -92,6 +102,25 @@ function addExtra(title, price) {
         }
     });
 
+}
+
+function confirmDelete(extra) {
+    BootstrapDialog.confirm({
+        title: 'Pay Attention!',
+        message: 'Are you sure you want to delete this item ?',
+        type: BootstrapDialog.TYPE_WARNING, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+        closable: true, // <-- Default value is false
+        draggable: true, // <-- Default value is false
+        btnCancelLabel: 'No', // <-- Default value is 'Cancel',
+        btnOKLabel: 'Yes', // <-- Default value is 'OK',
+        btnOKClass: 'btn-warning', // <-- If you didn't specify it, dialog type will be used,
+        callback: function (result) {
+            // result will be true if button was click, while it will be false if users close the dialog directly.
+            if (result) { //no clicked
+                deleteExtra(extra);
+            }
+        }
+    });
 }
 
 function deleteExtra(extra) {
@@ -110,7 +139,9 @@ function deleteExtra(extra) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            location.reload();
+            var tableRowId = "#" + extras[index].id;
+            $(tableRowId).remove();
+            extras.splice(index, 1);
 
         },
         failure: function (errMsg) {
@@ -134,7 +165,11 @@ function updateExtra(id, title, price) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
-            location.reload();
+            row.find('td:eq(0)').html(title);
+            extras[index] = extra;
+            $("#addExtra").show();
+            $('#title').val("");
+            $('#price').val("");
         },
         failure: function (errMsg) {
             alert(errMsg);

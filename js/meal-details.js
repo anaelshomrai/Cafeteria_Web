@@ -11,6 +11,8 @@ $(document).ready(function () {
     $("#new-main").hide();
 
     $("#back").click(function () {
+        sessionStorage.removeItem("editMeal");
+        sessionStorage.removeItem("editMealIndex");
         window.location.replace("category-details.html");
     });
 
@@ -47,26 +49,35 @@ $(document).ready(function () {
         $("#existing-main").hide();
     });
 
-    $("#saveMeal").click(function () {
+    $("#mealDetailsForm").submit(function () {
+        if ($('#new-main').is(":hidden") && $('#existing-main').is(":hidden")) {
+            alert("Fill main !");
+            return false;
+        }
+        if ($('#new-main').is(":visible")){
+            if ($('#mainTitle').val().length < 1){
+                alert("main is empty");
+                return false;
+            }
+        } else{
+            if (selectedIndex === undefined){
+                alert("main is empty");
+                return false;
+            }
+        }
+
+        $("#saveMeal").attr("disabled", true);
+
         var mealTitle = $('#mealTitle').val();
         var mealPrice = $('#mealPrice').val();
-        var main;
-        if ($('#new-main').is(":visible")) {
-            main = {
-                id: -1,
-                title: $('#mainTitle').val()
-            };
 
-        } else if ($('#existing-main').is(":visible")) {
-            main = mains[selectedIndex];
-            newMain = false;
-        }
         var extraAmount = $('#extraAmount').val();
 
         var selectedExtras = [];
         var extrasIndexes = $('[name="duallistbox"]').val();
         $.each(extrasIndexes, function (index, element) {
-            var thisExtra = extras[element];
+            var thisExtra = findExtra(element);
+
             selectedExtras.push({
                 id: thisExtra.id,
                 title: thisExtra.title,
@@ -76,35 +87,68 @@ $(document).ready(function () {
 
         var meal = {
             id: 0,
-            main: main,
+            main: "to be filled",
             title: mealTitle,
             extras: selectedExtras,
             extraAmount: extraAmount,
             price: mealPrice
         };
 
-        if ($("#saveMeal").text() == "Update") {
-            var meals = JSON.parse(sessionStorage.getItem("meals"));
-            var index = sessionStorage.getItem("editMealIndex");
-            meals[index] = meal;
-            sessionStorage.setItem("meals", JSON.stringify(meals));
-            sessionStorage.removeItem("editMeal");
-            sessionStorage.removeItem("editMealIndex");
-            alert("meals saved after update");
+        if ($('#new-main').is(":visible")) {
 
-        } else {
-            sessionStorage.setItem("meal", JSON.stringify(meal));
-            alert("meal saved after create");
+            addNewMainToDB($('#mainTitle').val(),
+                function (result) {
+                    meal.main = result;
+                    alert("meal in new main " + meal.main.id);
+                    if ($("#saveMeal").text() == "Update") {
+                        var meals = JSON.parse(sessionStorage.getItem("meals"));
+                        var index = sessionStorage.getItem("editMealIndex");
+                        meals[index] = meal;
+                        sessionStorage.setItem("meals", JSON.stringify(meals));
+                        sessionStorage.removeItem("editMeal");
+                        sessionStorage.removeItem("editMealIndex");
+                        alert("meals saved after update");
+                    } else {
+                        sessionStorage.setItem("meal", JSON.stringify(meal));
+                    }
+
+                    window.location.replace("category-details.html");
+
+                });
+
+        } else if ($('#existing-main').is(":visible")) {
+            meal.main = mains[selectedIndex - 1];
+            newMain = false;
         }
 
         //        alert("meal title: " + meal.title + "\n" +
         //            "meal price: " + meal.price + "\n" +
-        //            "main: " + meal.main.id + "\n" +
+        //            "main id: " + meal.main.id + "\n" +
+        //            "main title: " + meal.main.title + "\n" +
         //            "extra amount: " + meal.extraAmount + "\n" +
         //            "selected extra: " + meal.extras.length
         //        );
 
-        window.location.replace("category-details.html");
+        if (newMain === true) {
+
+        } else {
+            if ($("#saveMeal").text() == "Update") {
+                var meals = JSON.parse(sessionStorage.getItem("meals"));
+                var index = sessionStorage.getItem("editMealIndex");
+                meals[index] = meal;
+                sessionStorage.setItem("meals", JSON.stringify(meals));
+                sessionStorage.removeItem("editMeal");
+                sessionStorage.removeItem("editMealIndex");
+                alert("meals saved after update");
+                window.location.replace("category-details.html");
+            } else {
+                sessionStorage.setItem("meal", JSON.stringify(meal));
+            }
+            window.location.replace("category-details.html");
+        }
+
+        return false;
+
 
     });
 
@@ -120,13 +164,8 @@ $(document).ready(function () {
         $('#mealTitle').val(editMeal.title);
         $('#mealPrice').val(editMeal.price);
         var main = editMeal.main;
-        if (main.id === -1) {
-            $('#mainTitle').val(main.title);
-            $("#new-main").show();
-        } else {
-            $("#existing-main").show();
+        $("#existing-main").show();
 
-        }
         $('#extraAmount').val(editMeal.extraAmount);
         $('#saveMeal').text("Update");
 
@@ -135,7 +174,6 @@ $(document).ready(function () {
 });
 
 function initExtras() {
-    extras = [];
     var editExtras;
     if (inEdit === true) {
         editMeal = JSON.parse(sessionStorage.getItem("editMeal"));
@@ -200,8 +238,9 @@ function initMains() {
                     title: element.title
                 });
             })
-
-            $('.selectpicker').selectpicker('val', editMeal.main.title);
+            if ($("#saveMeal").text() == "Update") {
+                $('.selectpicker').selectpicker('val', editMeal.main.title);
+            }
 
 
         },
@@ -209,10 +248,6 @@ function initMains() {
             alert('request failed');
         }
     });
-
-}
-
-function addExtra(title, price) {
 
 }
 
@@ -231,6 +266,7 @@ function addExtra(title, price) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
+            console.log("in add extra :" + data.id);
             dualllistbox.append('<option value="' + data.id + '"selected="selected">' + data.title + '</option>');
             dualllistbox.bootstrapDualListbox('refresh', true);
 
@@ -239,10 +275,51 @@ function addExtra(title, price) {
                 title: data.title,
                 price: data.price
             });
+
+
+
         },
         failure: function (errMsg) {
             alert(errMsg);
         }
     });
 
+}
+
+function findExtra(extraId) {
+    var found;
+    $.each(extras, function (index, extra) {
+        if (Number(extra.id) === Number(extraId)) {
+            found = extra;
+            return false; //break from loop
+        }
+    })
+    return found;
+}
+
+function addNewMainToDB(mainTitle, callback) {
+    var main;
+    var urlAddress = "http://localhost:8080/CafeteriaServer/rest/web/addMain";
+    var extra = {
+        id: 0,
+        title: mainTitle
+    };
+
+    $.ajax({
+        type: "POST",
+        url: urlAddress,
+        data: JSON.stringify(extra),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (data) {
+            main = {
+                id: data.id,
+                title: data.title
+            };
+            callback(main);
+        },
+        failure: function (errMsg) {
+            alert(errMsg);
+        }
+    });
 }

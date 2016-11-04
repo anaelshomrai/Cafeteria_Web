@@ -40,3 +40,7 @@
     width:60%;
     margin: 0 auto;
 }
+
+form .error {
+  color: #ff0000;
+}
