@@ -240,6 +240,7 @@ function initMains() {
             })
             if ($("#saveMeal").text() == "Update") {
                 $('.selectpicker').selectpicker('val', editMeal.main.title);
+                selectedIndex = 0;
             }
 
 
