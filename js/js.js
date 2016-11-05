@@ -1,9 +1,6 @@
 $(document).ready(function () {
 
-    $('#signOut').click(function () {
-        localStorage.removeItem('customer');
-        window.location.replace("/index.html");
-    });
+
 
     $("#navbar").load("navbar.html");
 
@@ -29,9 +26,21 @@ function areYouSure(callback) {
             }
         }
     });
-    if (res === true){
+    if (res === true) {
         callback(true);
-    }else{
+    } else {
         callback(false);
     }
+}
+
+function logout(){
+        //        localStorage.removeItem('customer');
+        var emailCookieName = 'cafeteria-user-email';
+        var passwordCookieName = 'cafeteria-user-password';
+        document.cookie = emailCookieName + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+        document.cookie = passwordCookieName + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+
+        window.location.replace("/index.html");
 }

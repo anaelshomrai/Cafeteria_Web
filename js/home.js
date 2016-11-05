@@ -1,10 +1,12 @@
-window.customer = JSON.parse(localStorage.customer);
+//window.customer = JSON.parse(localStorage.customer);
 var categories = [];
 $(document).ready(function () {
 
     $("#addCategory").click(function () {
         window.location.replace("category-details.html");
     });
+
+
 });
 
 
@@ -113,3 +115,5 @@ function arrayBufferToBase64(buffer) {
     }
     return window.btoa(binary);
 }
+
+

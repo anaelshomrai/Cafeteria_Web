@@ -17,34 +17,32 @@
 ];
     $(document).ready(function () {
         meals = [];
+        //if we returned from add meal
         if (sessionStorage.getItem("meal") !== null) {
             var temp = JSON.parse(sessionStorage.getItem("meal"));
-            alert("meal recieved");
             sessionStorage.removeItem("meal");
+            // if this is the first meal
             if (sessionStorage.getItem("meals") === null) {
-                alert("create meals");
                 sessionStorage.setItem("meals", meals);
             } else {
+                //if we have more meals
                 meals = JSON.parse(sessionStorage.getItem("meals"));
-                alert("get meals");
             }
+            //add the new meal
             meals.push(temp);
+            //save the meals
             sessionStorage.setItem("meals", JSON.stringify(meals));
         }
 
-        if (sessionStorage.getItem("meals") !== null) {
+        // if there wasn't a meal in storage
+        if (sessionStorage.getItem("inEdit") !== null) {
             meals = JSON.parse(sessionStorage.getItem("meals"));
             $("#categoryDescription").val(sessionStorage.getItem("categoryDescription"));
             $("#categoryTitle").val(sessionStorage.getItem("categoryTitle"));
-
-        }
-        if (meals.length > 0) {
-            initMealsTable();
-        }
-        if (sessionStorage.getItem("meal") !== undefined && sessionStorage.getItem("meal") !== null) {
-            alert(JSON.parse(sessionStorage.getItem("meal")).title);
         }
 
+        // if we get out from this page remove all
+        // session storage variables
         $("#backToCategories").click(function () {
             sessionStorage.removeItem("meal");
             sessionStorage.removeItem("meals");
@@ -52,14 +50,19 @@
             window.location.replace("/index.html");
         });
 
+        // before moving to meal details page, save title
+        // and description. to-do: add icon.
         $("#addMealBtn").click(function () {
             var title = $("#categoryTitle").val();
             sessionStorage.setItem("categoryTitle", title);
             var desc = $("#categoryDescription").val();
             sessionStorage.setItem("categoryDescription", desc);
+            var icon = $('#theIcon').attr("src");
+            sessionStorage.setItem("categoryIcon", icon_index);
             window.location.replace("/meal-details.html");
         });
 
+        //check if all fileds are filled
         $("#addItem").click(function () {
             var itemTitle = $("#itemTitle").val();
             var itemPrice = $("#itemPrice").val();
@@ -72,6 +75,7 @@
             }
         });
 
+
         $("#categoryDetailsForm").submit(function () {
             $("#saveCategory").attr("disabled", true);
             if ($("#saveCategory").text() === "Update") {
@@ -80,15 +84,15 @@
                 saveCategoryinDB();
             }
             sessionStorage.removeItem("meals");
-             return false;
+            return false;
         });
 
 
+        // if we are in edit category
         if (sessionStorage.getItem("categoryEdit") !== null) {
             categoryEdit = JSON.parse(sessionStorage.getItem("categoryEdit"));
             sessionStorage.removeItem("categoryEdit");
             sessionStorage.setItem("inEdit", true);
-
 
             $("#categoryTitle").val(categoryEdit.title);
             $("#categoryDescription").val(categoryEdit.description);
@@ -109,20 +113,6 @@
             meals = categoryEdit.meals;
             sessionStorage.setItem("meals", JSON.stringify(meals));
 
-            if (meals.length > 0) {
-                $.each(meals, function (index, element) {
-                    $('#mealsTable').append($('<tr id="' + element.title + '"><td>' + element.title + '</td>' +
-                        '<td> <button type="button" class="btn btn-primary" id="editMeal">Edit <span' +
-                        ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" ' +
-                        'id="deleteMeal">Delete    <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
-                })
-
-                if (firstMeal === true) {
-                    addMealOptions();
-                    firstMeal = false;
-                }
-            }
-
             $("#saveCategory").text("Update");
             var temp =
                 arrayBufferToBase64(categoryEdit.icon);
@@ -133,12 +123,17 @@
 
         }
 
+        // to cover a case that we was in edit category,
+        // and then moved to meal details
         if (sessionStorage.getItem("inEdit") !== null) {
             $("#saveCategory").text("Update");
-            var icon = sessionStorage.getItem("categoryIcon");
-            var imgSrc = "data:image/png;base64," + icon;
-            $('#theIcon').attr("src", imgSrc);
+
         }
+
+        if (meals.length > 0) {
+            initMealsTable();
+        }
+
 
 
     });
@@ -155,11 +150,11 @@
             });
             $('.image-picker').append("<option data-img-src= " + element + " value=" + index + "> </option>");
 
-            if (categoryEdit === undefined) {
-
-            } else {
-                if (element.icon === categoryEdit.icon) {
-                    editIndex = index;
+            if (sessionStorage.getItem("inEdit") === undefined) {
+                if (categoryEdit !== undefined) {
+                    if (element.icon === categoryEdit.icon) {
+                        editIndex = index;
+                    }
                 }
             }
 
@@ -180,6 +175,12 @@
             var imageElement = document.createElement("img");
 
             imageElement.setAttribute('src', firstIcon);
+
+            if (sessionStorage.getItem("inEdit") !== null) {
+                var indx = sessionStorage.getItem("categoryIcon");
+                sessionStorage.removeItem("categoryIcon");
+                $('#theIcon').attr("src", localIcons[indx]);
+            }
 
         } else {
             $("select").val(-1);
@@ -252,13 +253,10 @@
         items[index].price = priceCell.text();
     }
 
-
-
-
     function initMealsTable() {
 
         $.each(meals, function (index, element) {
-            $('#mealsTable').append($('<tr id="' + element.title + '"><td>' + element.title + '</td>' +
+            $('#mealsTable').append($('<tr id="' + element.id + '"><td>' + element.title + '</td>' +
                 '<td> <button type="button" class="btn btn-primary" id="editMeal">Edit <span' +
                 ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" ' +
                 'id="deleteMeal">Delete    <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
@@ -275,7 +273,7 @@
         $(document).on("click", "#mealsTable #deleteMeal", function (e) {
             var row = $(this).closest('tr');
             var index = row.index();
-            var tableRowId = "#" + meals[index].title;
+            var tableRowId = "#" + meals[index].id;
             $(tableRowId).remove();
             meals.splice(index, 1);
 
