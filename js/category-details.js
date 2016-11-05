@@ -1,5 +1,6 @@
     var icons = [];
     var items = [];
+    var mealsToDel = [];
     var firstItem = true;
     var meals = new Array();
     var icon_index = 0;
@@ -178,7 +179,6 @@
 
             if (sessionStorage.getItem("inEdit") !== null) {
                 var indx = sessionStorage.getItem("categoryIcon");
-                sessionStorage.removeItem("categoryIcon");
                 $('#theIcon').attr("src", localIcons[indx]);
             }
 
@@ -275,6 +275,7 @@
             var index = row.index();
             var tableRowId = "#" + meals[index].id;
             $(tableRowId).remove();
+            mealsToDel.push(meals[index]);
             meals.splice(index, 1);
 
         });
@@ -378,6 +379,9 @@
             icon: icon
         }, function (data, status) {
             alert("Data: " + data + "\nStatus: " + status);
+            if (mealsToDel !== null) {
+                deleteMeals(mealsToDel);
+            }
             window.location.replace("/home.html");
 
             if (data === null) {
@@ -385,6 +389,25 @@
             } else {
 
 
+            }
+        });
+
+    }
+
+    function deleteMeals(mealsToDel) {
+        var urlAddress = "http://localhost:8080/CafeteriaServer/rest/web/deleteMeals";
+
+        $.ajax({
+            type: "POST",
+            url: urlAddress,
+            data: JSON.stringify(mealsToDel),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+              alert("success " + data);
+            },
+            failure: function (errMsg) {
+                alert(errMsg);
             }
         });
 

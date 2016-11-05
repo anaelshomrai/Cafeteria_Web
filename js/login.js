@@ -35,17 +35,8 @@ $(document).ready(function () {
 
                 document.cookie = passwordName + "=" + data.password + ";" + expires + ";path=/";
 
-                //                localStorage.customer = JSON.stringify(data);
                 window.location.replace("/home.html");
             }
         });
     });
 });
-//
-//window.onload = function(event) {
-//        event.stopPropagation(true);
-//
-//    if (Cookies.get('cafeteria-user-email') && Cookies.get('cafeteria-user-password')) {
-//        window.location.replace("home.html");
-//    }
-//};
