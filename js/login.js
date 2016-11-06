@@ -15,16 +15,11 @@ $(document).ready(function () {
             email: email,
             password: password
         }, function (data, status) {
-            alert("Data: " + data + "\nStatus: " + status);
+            //            alert("Data: " + data + "\nStatus: " + status);
             if (data === null) {
-                alert("null");
+                alert("Wrong details!");
             } else {
-                //                Cookies.set('cafeteria-user-email', data.email, {
-                //                    expires: 365
-                //                });
-                //                Cookies.set('cafeteria-user-password', data.password, {
-                //                    expires: 365
-                //                });
+
                 var d = new Date();
                 var emailName = 'cafeteria-user-email';
                 var passwordName = 'cafeteria-user-password';
@@ -39,5 +34,24 @@ $(document).ready(function () {
             }
         });
     });
-});
 
+    $('#forgotPasswordBtn').click(function () {
+        var email = $('#forgot-email').val();
+        var urlAddress = "http://localhost:8080/CafeteriaServer/rest/web/getUserPassword";
+
+        $.post(urlAddress, {
+            email: email
+        }, function (data, status) {
+            //alert("Data: " + data + "\nStatus: " + status);
+            if (data === null) {
+                alert("Wrong email!");
+            } else {
+                alert("Your password is: " + data.password);
+                $('form').animate({
+                    height: "toggle",
+                    opacity: "toggle"
+                }, "slow");
+            }
+        });
+    });
+});
