@@ -1,9 +1,12 @@
 //window.customer = JSON.parse(localStorage.customer);
 var categories = [];
 $(document).ready(function () {
-
+    sessionStorage.removeItem("meal");
+    sessionStorage.removeItem("meals");
+    sessionStorage.removeItem("inEdit");
+    sessionStorage.removeItem("saveDetails");
     $("#addCategory").click(function () {
-        window.location.replace("category-details.html");
+        window.location = "category-details.html";
     });
 
 
@@ -43,7 +46,7 @@ function initTable(data) {
 
 }
 
-function confirmDelete(category,index) {
+function confirmDelete(category, index) {
     BootstrapDialog.confirm({
         title: 'Pay Attention!',
         message: 'Are you sure you want to delete this item ?',
@@ -62,7 +65,7 @@ function confirmDelete(category,index) {
     });
 }
 
-function deleteCategory(category,index) {
+function deleteCategory(category, index) {
     var urlAddress = "http://localhost:8080/CafeteriaServer/rest/web/deleteCategory";
 
     var decoded = arrayBufferToBase64(category.icon);
@@ -91,7 +94,7 @@ function addOnClickFunctions() {
         var row = $(this).closest('tr');
         var index = row.index();
         var category = categories[index];
-        confirmDelete(category,index);
+        confirmDelete(category, index);
     });
 
     $(document).on("click", "#categoriesTable #editCategory", function (e) {
@@ -100,8 +103,7 @@ function addOnClickFunctions() {
         var index = row.index();
         var categoryEdit = categories[index];
         sessionStorage.setItem("categoryEdit", JSON.stringify(categoryEdit));
-        window.location.replace("category-details.html");
-
+        window.location = "category-details.html";
 
     });
 }
@@ -115,5 +117,3 @@ function arrayBufferToBase64(buffer) {
     }
     return window.btoa(binary);
 }
-
-

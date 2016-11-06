@@ -13,7 +13,7 @@ $(document).ready(function () {
     $("#back").click(function () {
         sessionStorage.removeItem("editMeal");
         sessionStorage.removeItem("editMealIndex");
-        window.location.replace("category-details.html");
+        window.location.href = "category-details.html";
     });
 
     $('.selectpicker').selectpicker();
@@ -54,13 +54,13 @@ $(document).ready(function () {
             alert("Fill main !");
             return false;
         }
-        if ($('#new-main').is(":visible")){
-            if ($('#mainTitle').val().length < 1){
+        if ($('#new-main').is(":visible")) {
+            if ($('#mainTitle').val().length < 1) {
                 alert("main is empty");
                 return false;
             }
-        } else{
-            if (selectedIndex === undefined){
+        } else {
+            if (selectedIndex === undefined) {
                 alert("main is empty");
                 return false;
             }
@@ -84,9 +84,15 @@ $(document).ready(function () {
                 price: thisExtra.price
             });
         })
+        var id;
+        if (editMeal !== undefined) {
+            id = editMeal.id;
+        } else {
+            id = 0;
+        }
 
         var meal = {
-            id: 0,
+            id: id,
             main: "to be filled",
             title: mealTitle,
             extras: selectedExtras,
@@ -99,7 +105,6 @@ $(document).ready(function () {
             addNewMainToDB($('#mainTitle').val(),
                 function (result) {
                     meal.main = result;
-                    alert("meal in new main " + meal.main.id);
                     if ($("#saveMeal").text() == "Update") {
                         var meals = JSON.parse(sessionStorage.getItem("meals"));
                         var index = sessionStorage.getItem("editMealIndex");
@@ -107,16 +112,16 @@ $(document).ready(function () {
                         sessionStorage.setItem("meals", JSON.stringify(meals));
                         sessionStorage.removeItem("editMeal");
                         sessionStorage.removeItem("editMealIndex");
-                        alert("meals saved after update");
                     } else {
                         sessionStorage.setItem("meal", JSON.stringify(meal));
                     }
 
-                    window.location.replace("category-details.html");
+                    window.location = "category-details.html";
 
                 });
 
         } else if ($('#existing-main').is(":visible")) {
+            alert(selectedIndex - 1);
             meal.main = mains[selectedIndex - 1];
             newMain = false;
         }
@@ -139,12 +144,11 @@ $(document).ready(function () {
                 sessionStorage.setItem("meals", JSON.stringify(meals));
                 sessionStorage.removeItem("editMeal");
                 sessionStorage.removeItem("editMealIndex");
-                alert("meals saved after update");
-                window.location.replace("category-details.html");
+                window.location.href = "category-details.html";
             } else {
                 sessionStorage.setItem("meal", JSON.stringify(meal));
             }
-            window.location.replace("category-details.html");
+            window.location.href = "category-details.html";
         }
 
         return false;
@@ -159,7 +163,6 @@ $(document).ready(function () {
     if (sessionStorage.getItem("editMeal") !== null) {
         inEdit = true;
         editMeal = JSON.parse(sessionStorage.getItem("editMeal"));
-        alert("at update found edit meal");
 
         $('#mealTitle').val(editMeal.title);
         $('#mealPrice').val(editMeal.price);
@@ -240,7 +243,7 @@ function initMains() {
             })
             if ($("#saveMeal").text() == "Update") {
                 $('.selectpicker').selectpicker('val', editMeal.main.title);
-                selectedIndex = 0;
+                selectedIndex = 1;
             }
 
 

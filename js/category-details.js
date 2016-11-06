@@ -17,6 +17,7 @@
 "https://s18.postimg.org/xjimiz9ix/pizza_black.png"
 ];
     $(document).ready(function () {
+
         meals = [];
         //if we returned from add meal
         if (sessionStorage.getItem("meal") !== null) {
@@ -38,8 +39,6 @@
         // if there wasn't a meal in storage
         if (sessionStorage.getItem("inEdit") !== null) {
             meals = JSON.parse(sessionStorage.getItem("meals"));
-            $("#categoryDescription").val(sessionStorage.getItem("categoryDescription"));
-            $("#categoryTitle").val(sessionStorage.getItem("categoryTitle"));
         }
 
         // if we get out from this page remove all
@@ -47,8 +46,9 @@
         $("#backToCategories").click(function () {
             sessionStorage.removeItem("meal");
             sessionStorage.removeItem("meals");
-            sessionStorage.removeItem("inEdit")
-            window.location.replace("/index.html");
+            sessionStorage.removeItem("inEdit");
+            sessionStorage.removeItem("saveDetails");
+            window.location.href = "/index.html";
         });
 
         // before moving to meal details page, save title
@@ -59,8 +59,9 @@
             var desc = $("#categoryDescription").val();
             sessionStorage.setItem("categoryDescription", desc);
             var icon = $('#theIcon').attr("src");
-            sessionStorage.setItem("categoryIcon", icon_index);
-            window.location.replace("/meal-details.html");
+            sessionStorage.setItem("categoryIcon", icon);
+            sessionStorage.setItem("inEdit", true);
+            window.location = "meal-details.html";
         });
 
         //check if all fileds are filled
@@ -119,7 +120,7 @@
                 arrayBufferToBase64(categoryEdit.icon);
             var imgSrc = "data:image/png;base64," + temp;
             $('#theIcon').attr("src", imgSrc);
-            sessionStorage.setItem("categoryIcon", temp);
+            sessionStorage.setItem("categoryIcon", imgSrc);
             sessionStorage.setItem("categoryId", categoryEdit.id);
 
         }
@@ -131,11 +132,18 @@
 
         }
 
-        if (meals.length > 0) {
+        if (meals !== null && meals.length > 0) {
             initMealsTable();
         }
 
 
+        if (sessionStorage.getItem("saveDetails") !== null) {
+            $("#categoryTitle").val(sessionStorage.getItem("categoryTitle"));
+            $("#categoryDescription").val(sessionStorage.getItem("categoryDescription"));
+            var icon = sessionStorage.getItem("categoryIcon");
+            $('#theIcon').attr("src", icon);
+        }
+        sessionStorage.setItem("saveDetails", true);
 
     });
 
@@ -169,18 +177,18 @@
             }
         });
 
-        if (categoryEdit === undefined) {
+        if (sessionStorage.getItem("inEdit") === null) {
             var firstIcon = localIcons[0];
             $('#theIcon').attr("src", firstIcon);
-            var canvas = document.createElement("canvas");
-            var imageElement = document.createElement("img");
+//            var canvas = document.createElement("canvas");
+//            var imageElement = document.createElement("img");
+//
+//            imageElement.setAttribute('src', firstIcon);
 
-            imageElement.setAttribute('src', firstIcon);
-
-            if (sessionStorage.getItem("inEdit") !== null) {
-                var indx = sessionStorage.getItem("categoryIcon");
-                $('#theIcon').attr("src", localIcons[indx]);
-            }
+            //            if (sessionStorage.getItem("inEdit") !== null) {
+            //                var indx = sessionStorage.getItem("categoryIcon");
+            //                $('#theIcon').attr("src", localIcons[indx]);
+            //            }
 
         } else {
             $("select").val(-1);
@@ -284,14 +292,13 @@
             var row = $(this).closest('tr');
             var index = row.index();
             var mealEdit = meals[index];
-            alert("meals[" + index + "]" + ": " + meals[index]);
             sessionStorage.setItem("editMealIndex", index);
             sessionStorage.setItem("editMeal", JSON.stringify(mealEdit));
             var title = $("#categoryTitle").val();
             sessionStorage.setItem("categoryTitle", title);
             var desc = $("#categoryDescription").val();
             sessionStorage.setItem("categoryDescription", desc);
-            window.location.replace("/meal-details.html");
+            window.location = "meal-details.html";
         });
     }
 
@@ -331,8 +338,8 @@
             meals: JSON.stringify(meals),
             icon: icon
         }, function (data, status) {
-            alert("Data: " + data + "\nStatus: " + status);
-            window.location.replace("/home.html");
+            //            alert("Data: " + data + "\nStatus: " + status);
+            window.location = "home.html";
 
             if (data === null) {
                 alert("null");
@@ -361,14 +368,14 @@
             icon: icon
         };
 
-        alert("category id: " + category.id + "\n" +
-            "category title: " + category.title + "\n" +
-            "category description: " + category.description + "\n" +
-            "category items: " + items + "\n" +
-            "cateory meals: " + category.meals + "\n" +
-            "cateory icon: " + icon + "\n"
-
-        );
+        //        alert("category id: " + category.id + "\n" +
+        //            "category title: " + category.title + "\n" +
+        //            "category description: " + category.description + "\n" +
+        //            "category items: " + items + "\n" +
+        //            "cateory meals: " + category.meals + "\n" +
+        //            "cateory icon: " + icon + "\n"
+        //
+        //        );
 
         $.post(urlAddress, {
             id: id,
@@ -378,11 +385,11 @@
             meals: JSON.stringify(meals),
             icon: icon
         }, function (data, status) {
-            alert("Data: " + data + "\nStatus: " + status);
+            //            alert("Data: " + data + "\nStatus: " + status);
             if (mealsToDel !== null) {
                 deleteMeals(mealsToDel);
             }
-            window.location.replace("/home.html");
+            window.location = "home.html";
 
             if (data === null) {
                 alert("null");
@@ -404,11 +411,32 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (data) {
-              alert("success " + data);
+                //                alert("success " + data);
             },
             failure: function (errMsg) {
                 alert(errMsg);
             }
         });
 
+    }
+
+    function HandleBackFunctionality() {
+        if (window.event) //IE
+        {
+            if (window.event.clientX < 40 && window.event.clientY < 0) {
+                alert("Browser back button is clicked...");
+            } else {
+                alert("Browser refresh button is clicked...");
+            }
+        } else //Chrome
+        {
+            if (event.currentTarget.performance.navigation.type == 1) //firefox
+            {
+                alert("Browser refresh button is clicked...");
+            }
+            if (event.currentTarget.performance.navigation.type == 2) //firefox
+            {
+                alert("Browser back button is clicked...");
+            }
+        }
     }

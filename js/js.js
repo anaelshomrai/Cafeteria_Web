@@ -40,5 +40,5 @@ function logout(){
         document.cookie = passwordCookieName + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 
 
-        window.location.replace("/index.html");
+        window.location = "index.html";
 }

@@ -16,8 +16,9 @@
 
 <body onload="initExtras()">
 
+    <div class="text-center">
     <button type="button" id="back" class="btn btn-primary">Go Back</button>
-
+</div>
     <div class="container">
         <h1 class="my-headline text-center">Add Meal</h1>
         <form id="mealDetailsForm" class="my-form">
@@ -33,14 +34,14 @@
 
             <div class="form-group text-center">
                 <h4 class="text-center">Choose Main: </h4>
-                    <div class="row">
-                        <div class="col-md-6 col-sm-6 col-xs-6 singleInput">
-                            <button id="addExistingMain" type="button" class="btn btn-primary">Existing Main </button>
-                        </div>
-                        <div class="col-md-6 col-sm-6 col-xs-6 singleInput">
-                            <button id="addNewMain" type="button" class="btn btn-primary">Create New Main </button>
-                        </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6 singleInput">
+                        <button id="addExistingMain" type="button" class="btn btn-primary">Existing Main </button>
                     </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6 singleInput">
+                        <button id="addNewMain" type="button" class="btn btn-primary">Create New Main </button>
+                    </div>
+                </div>
             </div>
 
             <div id="existing-main" class="form-group">
@@ -70,43 +71,43 @@
                 </div>
             </div>
 
-                <div class="form-group">
-                    <label>Extras</label>
-                    <div id="addExtrasDiv">
-                        <div class="row">
-                            <div class="col-md-6 col-sm-6 col-xs-12 singleInput">
-                                <input id="extraTitle" type="text" class="form-control" placeholder="Title" aria-describedby="basic-addon1">
-                            </div>
-                            <div class="col-md-6 col-sm-6 col-xs-12 singleInput">
-                                <input id="extraPrice" type="number" min="0" class="form-control" placeholder="Price" aria-describedby="basic-addon1">
-                            </div>
-                            <div class="col-md-12 col-sm-12 col-xs-12 singleInput text-center">
-                                <button id="addExtra" type="button" class="btn btn-success">Add Extra
+            <div class="form-group">
+                <label>Extras</label>
+                <div id="addExtrasDiv">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-12 singleInput">
+                            <input id="extraTitle" type="text" class="form-control" placeholder="Title" aria-describedby="basic-addon1">
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-12 singleInput">
+                            <input id="extraPrice" type="number" min="0" class="form-control" placeholder="Price" aria-describedby="basic-addon1">
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12 singleInput text-center">
+                            <button id="addExtra" type="button" class="btn btn-success">Add Extra
       <span class="glyphicon glyphicon-ok"></span>
     </button>
-                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <select multiple="multiple" size="8" name="duallistbox">
+            </div>
+            <div class="form-group">
+                <select multiple="multiple" size="8" name="duallistbox">
 
                 </select>
-                </div>
+            </div>
 
-                <div class="form-group text-center">
-                    <button id="saveMeal" type="submit" class="btn btn-primary ">Submit</button>
-                </div>
+            <div class="form-group text-center">
+                <button id="saveMeal" type="submit" class="btn btn-primary ">Submit</button>
+            </div>
         </form>
-        </div>
+    </div>
 
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="js/jquery.bootstrap-duallistbox.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
-        <script language="JavaScript" type="text/javascript" src="js/image-picker.min.js"></script>
-        <script language="JavaScript" type="text/javascript" src="/js/meal-details.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="js/jquery.bootstrap-duallistbox.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/js/bootstrap-select.min.js"></script>
+    <script language="JavaScript" type="text/javascript" src="js/image-picker.min.js"></script>
+    <script language="JavaScript" type="text/javascript" src="js/meal-details.js"></script>
 
 
 </body>

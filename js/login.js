@@ -35,8 +35,9 @@ $(document).ready(function () {
 
                 document.cookie = passwordName + "=" + data.password + ";" + expires + ";path=/";
 
-                window.location.replace("/home.html");
+                window.location = "home.html";
             }
         });
     });
 });
+
