@@ -2,6 +2,9 @@ var extras = [];
 var index;
 var extra;
 var row;
+var currIndex;
+var prevIndex = 0;
+var nextIndex;
 $(document).ready(function () {
 
     $("#updateExtra").click(function () {
@@ -22,10 +25,75 @@ $(document).ready(function () {
 
     $("#updateExtra").hide();
 
+    $("#next").click(function () {
+        alert("start: prev " + prevIndex + " next " + nextIndex);
+
+        if ((prevIndex + 1) === extras.length) {
+            $("#previous").attr("disabled", false);
+        }
+        var counter = 0;
+        var temp = nextIndex;
+        $('#extrasTable > tbody  > tr').each(function (i, currRow) {
+
+            var row = $(currRow)
+            if (counter < 20) {
+                if (i < (temp + 1)) {
+                    row.addClass("hide");
+                    nextIndex = i;
+                } else {
+                    row.removeClass("hide");
+                    prevIndex = i;
+                }
+                counter++;
+            }
+        });
+
+        alert("finish: prev " + prevIndex + " next " + nextIndex);
+        if ((prevIndex + 1) === extras.length) {
+            $("#next").attr("disabled", true);
+        }
+    });
+
+    $("#previous").click(function () {
+        alert("start: prev " + prevIndex + " next " + nextIndex);
+
+        var rowCount = $('#extrasTable tr.hide').length;
+        if (rowCount < extras.length) {
+            $("#next").attr("disabled", false);
+        }
+
+        var differ = extras.length - rowCount;
+        var temp = prevIndex - differ;
+        var counter = 0;
+
+        if (differ > 0) {
+            $('#extrasTable > tbody  > tr').each(function (i, currRow) {
+                var row = $(currRow);
+
+                if (counter < 20) {
+                    if (i < (temp + 1)) {
+                        row.removeClass("hide");
+                        nextIndex = i;
+                    } else {
+                        row.addClass("hide");
+                        prevIndex = i;
+                    }
+                    counter++;
+                }
+            });
+        }
+        alert("prev " + prevIndex + " next " + nextIndex);
+
+        if ((prevIndex + 1) === extras.length) {
+            $("#previous").attr("disabled", true);
+        }
+
+    });
+
 });
 
 
-function initTable(data) {
+function initExtras(data) {
     extras = [];
     var theUrl = "http://localhost:8080/CafeteriaServer/rest/web/getExtras";
     $.ajax({
@@ -36,8 +104,15 @@ function initTable(data) {
         success: function (data, textStatus) {
             //            alert('request successful');
             $.each(data, function (index, element) {
-                $('#extrasTable').append($('<tr id="' + element.id + '"><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editExtra">Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteExtra"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
+                if (index < 10) { //show only 10 but keep populate the extras array
+                    nextIndex = index;
+                    $('#extrasTable').append($('<tr id="' + element.id + '"><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editExtra">Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteExtra"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
+                } else {
+                    $('#extrasTable').append($('<tr id="' + element.id + '"><td>' + element.title + '</td>' + '<td> <button type="button" class="btn btn-primary" id="editExtra">Edit <span' + ' class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-primary" id="deleteExtra"' + '>Delete <span class="glyphicon glyphicon-remove"></span></button></td></tr>'));
 
+                    var last = $('#extrasTable tr').last();
+                    last.addClass("hide");
+                }
 
                 extras.push({
                     "id": element.id,
