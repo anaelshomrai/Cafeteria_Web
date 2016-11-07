@@ -1,0 +1,43 @@
+.table-fixed {
+    width: 100%;
+}
+
+tbody {
+    height: 350px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+thead,
+tbody,
+tr,
+td,
+th {
+    display: block;
+}
+
+td {
+    float: left;
+    width: 50%;
+}
+
+th {
+    float: left;
+    background-color: rgba(23, 20, 237, 0.27);
+    width: 50%;
+}
+
+.results tr[visible='false'],
+.no-result {
+    display: none;
+}
+
+.counter {
+    padding: 8px;
+    color: #ccc;
+}
+
+.half-cetnered {
+    width: 50%;
+    margin: 0 auto;
+}
