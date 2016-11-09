@@ -48,7 +48,7 @@
             sessionStorage.removeItem("meals");
             sessionStorage.removeItem("inEdit");
             sessionStorage.removeItem("saveDetails");
-            window.location.href = "/index.html";
+            window.location.href = "index.html";
         });
 
         // before moving to meal details page, save title
